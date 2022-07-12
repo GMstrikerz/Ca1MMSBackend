@@ -8,7 +8,8 @@ const CREATE_TABLE_SQL = `
     CREATE TABLE ${TABLE_NAME} (
         id SERIAL primary key,
         modulename VARCHAR not null,
-        creditunit INT not null
+        creditunit INT not null,
+        semester  String not null
         
     );
 `;
