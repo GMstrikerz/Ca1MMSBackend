@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const createHttpError = require('http-errors');
-const { get, add, TABLE_NAME } = require('./moduleInfo');
+const { get, add, Module_Table } = require('./moduleInfo');
 const { query } = require('./database');
 const { Pool } = require('pg');
 //Get all module info
@@ -20,10 +20,10 @@ module.exports = express()
     //Create module info (moduleName,creditUnit)
     .post('/Module', (req, res, next) => {
         try{
-            const { modulename,creditUnit }=req.body;
+            const { modulename,creditUnit,semester }=req.body;
             const newModuleinfo=await pool.query(
-          "INSERT INTO module_tab (modulename,creditUnit) VALUES ($1,$2) RETURNING  *",
-            [modulename,creditUnit]
+          "INSERT INTO module_tab (modulename,creditUnit,semester) VALUES ($1,$2,$3) RETURNING  *",
+            [modulename,creditUnit,semester]
     );
        res.json(newModuleinfo.rows[0]);
        }catch (err) {
@@ -49,7 +49,7 @@ module.exports = express()
 
     .delete('/Module/:id',(req,res,next)=>{
         const { id }=req.params;         
-        return query(`Delete FROM ${TABLE_NAME}  WHERE  id= $1 `,[id])
+        return query(`Delete FROM ${Module_Table}  WHERE  id= $1 `,[id])
         .then((Result) => res.status(200).send())
             .catch(next);
     })

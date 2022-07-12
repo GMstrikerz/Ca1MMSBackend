@@ -29,7 +29,7 @@ module.exports.getAllModules = function get() {
 //To create the Module
 
 module.exports.addModule = function add(currentModuleName, currentcreditUnit,currentSemester) {
-    return query(`INSERT INTO ${Module_Table} (modulename,creditUnit,semester) VALUES($1,$2) RETURNING  *`, [
+    return query(`INSERT INTO ${Module_Table} (modulename,creditUnit,semester) VALUES($1,$2,$3) RETURNING  *`, [
         currentModuleName,
         currentcreditUnit,
         currentSemester

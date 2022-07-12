@@ -49,7 +49,7 @@ module.exports = express()
     .get('/Module', (req, res, next) => {
         return getAllModules()
             .then((result) => {
-                if (!result) return next(createHttpError(404, `moduleName & creditUnit ${result} not found`));
+                if (!result) return next(createHttpError(404, `moduleName & creditUnit & semester ${result} not found`));
                 return res.json(result).end();
             })
             .catch(next);
@@ -63,7 +63,7 @@ module.exports = express()
 
         }
         return addModule(currentModuleName,currentcreditUnit,currentSemester)
-        .then((currentModuleName,currentcreditUnit)=>res.status(201).json({currentModuleName,currentcreditUnit,currentSemester}))
+        .then((currentModuleName,currentcreditUnit,currentSemester)=>res.status(201).json({currentModuleName,currentcreditUnit,currentSemester}))
         .catch(next);
         
           })
