@@ -1,24 +1,24 @@
 const createHttpError = require('http-errors');
 const { query, POSTGRES_ERROR_CODE } = require('./database');
 
-const TABLE_NAME = 'module_tab';
-module.exports.TABLE_NAME = TABLE_NAME;
+const Module_Table = 'module_tab';
+module.exports.Module_Table = Module_Table;
 
-const CREATE_TABLE_SQL = `
-    CREATE TABLE ${TABLE_NAME} (
+const CREATE_TABLE_Module = `
+    CREATE TABLE ${Module_Table} (
         id SERIAL primary key,
         modulename VARCHAR not null,
         creditunit INT not null,
-        semester  String not null
+        semester  VARCHAR not null
         
     );
 `;
-module.exports.CREATE_TABLE_SQL = CREATE_TABLE_SQL;
+module.exports.CREATE_TABLE_Module = CREATE_TABLE_Module;
 
 //to get All Modules
 
 module.exports.getAllModules = function get() {
-    return query(`SELECT * FROM ${TABLE_NAME}  `,[])
+    return query(`SELECT * FROM ${Module_Table}  `,[])
     .then((result) => {
         if  (!result.rows.length) return null;
         console.log(result.rows);
@@ -28,10 +28,11 @@ module.exports.getAllModules = function get() {
 
 //To create the Module
 
-module.exports.addModule = function add(currentModuleName, currentcreditUnit) {
-    return query(`INSERT INTO ${TABLE_NAME} (modulename,creditUnit) VALUES($1,$2) RETURNING  *`, [
+module.exports.addModule = function add(currentModuleName, currentcreditUnit,currentSemester) {
+    return query(`INSERT INTO ${Module_Table} (modulename,creditUnit,semester) VALUES($1,$2) RETURNING  *`, [
         currentModuleName,
         currentcreditUnit,
+        currentSemester
     ])
         .then((response) => response.rows[0].currentModuleName)
         .catch((error) => {
@@ -44,7 +45,7 @@ module.exports.addModule = function add(currentModuleName, currentcreditUnit) {
 
 //To update the CreditUnit of the Module
 module.exports.updateCreditunit=function add(moduleid,creditUnit) {
-    return query(`UPDATE  ${TABLE_NAME} SET creditUnit= $2 where id =$1  RETURNING *` , [moduleid,creditUnit]).then((result) => {
+    return query(`UPDATE  ${Module_Table} SET creditUnit= $2 where id =$1  RETURNING *` , [moduleid,creditUnit]).then((result) => {
         if (!result.rows.length) return null;
         return result;
     });
@@ -54,7 +55,7 @@ module.exports.updateCreditunit=function add(moduleid,creditUnit) {
 //To delete the Module by id
 
 module.exports.deleteModule= function get(id) {
-    return query(`DELETE FROM ${TABLE_NAME} where id= $1`,[id]).then((result) => {
+    return query(`DELETE FROM ${Module_Table} where id= $1`,[id]).then((result) => {
         if (!result.rows.length) return null;
         return result;
     });
@@ -63,7 +64,7 @@ module.exports.deleteModule= function get(id) {
 //To search Modulename and get creditUnit
 module.exports.getcreditunitbyModuleName=function getcreditunitbyModuleName(modulename) {
     console.log(modulename)
-    return query(`SELECT creditunit From ${TABLE_NAME}  where modulename=$1`,[modulename])
+    return query(`SELECT creditunit From ${Module_Table}  where modulename=$1`,[modulename])
 	.then((result) => {
         if (!result.rows) return null;
         return result.rows;

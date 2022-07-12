@@ -2,7 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const bodyParser=require('body-parser');
 const createHttpError = require('http-errors');
-const { get, add, getTimestampAfterNDays, TABLE_NAME } = require('./storage');
+const { get, add, getTimestampAfterNDays, Storage_Table } = require('./storage');
 const  { getAllModules,addModule,updateCreditunit,deleteModule,getcreditunitbyModuleName } = require('./moduleInfo');
 
 const { query } = require('./database');
@@ -39,7 +39,7 @@ module.exports = express()
 
     .delete('/storage',(req,res,next)=>{
         const now=getTimestampAfterNDays(0);
-        return query(`Delete FROM ${TABLE_NAME} WHERE expire_on < $1 `, [now])
+        return query(`Delete FROM ${Storage_Table} WHERE expire_on < $1 `, [now])
         .then((Result) => res.status(200).send())
             .catch(next);
     
@@ -57,13 +57,13 @@ module.exports = express()
         
     //Create module info (moduleName,creditUnit)
     .post('/Module',  (req, res, next) => {
-        const { currentModuleName,currentcreditUnit} = req.body;
+        const { currentModuleName,currentcreditUnit,currentSemester} = req.body;
         if(!currentModuleName) {
             if (!currentModuleName) return next(createHttpError(404, ` modulename not found`));
 
         }
-        return addModule(currentModuleName,currentcreditUnit)
-        .then((currentModuleName,currentcreditUnit)=>res.status(201).json({currentModuleName,currentcreditUnit}))
+        return addModule(currentModuleName,currentcreditUnit,currentSemester)
+        .then((currentModuleName,currentcreditUnit)=>res.status(201).json({currentModuleName,currentcreditUnit,currentSemester}))
         .catch(next);
         
           })

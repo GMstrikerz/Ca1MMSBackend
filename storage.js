@@ -2,11 +2,11 @@ const createHttpError = require('http-errors');
 const { nanoid } = require('nanoid');
 const { query, POSTGRES_ERROR_CODE } = require('./database');
 
-const TABLE_NAME = 'storage_tab';
-module.exports.TABLE_NAME = TABLE_NAME;
+const Storage_Table = 'storage_tab';
+module.exports.Storage_Table = Storage_Table;
 
-const CREATE_TABLE_SQL = `
-    CREATE TABLE ${TABLE_NAME} (
+const CREATE_TABLE_Storage = `
+    CREATE TABLE ${Storage_Table} (
         id SERIAL primary key,
         key VARCHAR unique not null,
         data VARCHAR not null,
@@ -14,7 +14,7 @@ const CREATE_TABLE_SQL = `
         
     );
 `;
-module.exports.CREATE_TABLE_SQL = CREATE_TABLE_SQL;
+module.exports.CREATE_TABLE_Storage = CREATE_TABLE_Storage;
 
 function getTimestampAfterNDays(n) {
     return Math.floor(new Date().setDate(new Date().getDate() + n) / 1000);
@@ -23,7 +23,7 @@ module.exports.getTimestampAfterNDays = getTimestampAfterNDays;
 
 module.exports.add = function add(data, key = nanoid(), expireAfterDays = 7) {
     const expireOn = getTimestampAfterNDays(expireAfterDays);
-    return query(`INSERT INTO ${TABLE_NAME} (key, data, expire_on) VALUES($1, $2, $3) RETURNING key`, [
+    return query(`INSERT INTO ${Storage_Table} (key, data, expire_on) VALUES($1, $2, $3) RETURNING key`, [
         key,
         JSON.stringify(data),
         expireOn,
@@ -37,13 +37,13 @@ module.exports.add = function add(data, key = nanoid(), expireAfterDays = 7) {
 };
 
 module.exports.get = function get(key, now = getTimestampAfterNDays(0)) {
-    return query(`SELECT data FROM ${TABLE_NAME} where key = $1 and expire_on > $2`, [key, now]).then((result) => {
+    return query(`SELECT data FROM ${Storage_Table} where key = $1 and expire_on > $2`, [key, now]).then((result) => {
         if (!result.rows.length) return null;
         return JSON.parse(result.rows[0].data);
     });
 };
 module.exports.delete== function get( now = getTimestampAfterNDays(0)) {
-    return query(`DELETE FROM ${TABLE_NAME} where expire_on < $1`, [now]).then((result) => {
+    return query(`DELETE FROM ${Storage_Table} where expire_on < $1`, [now]).then((result) => {
         if (!result.rows.length) return null;
         return JSON.parse(result.rows[0].data);
     });
