@@ -54,6 +54,7 @@ module.exports = express()
             })
             .catch(next);
     })
+
         
     //Create module info (moduleName,creditUnit)
     .post('/Module',  (req, res, next) => {
